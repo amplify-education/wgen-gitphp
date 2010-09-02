@@ -85,6 +85,8 @@ class GitPHP_ProjectListDirectory extends GitPHP_ProjectListBase
 						$projectPath = substr($fullPath, $trimlen);
 						try {
 							$proj = new GitPHP_Project($projectPath);
+							$proj->SetCategory(trim(str_replace($this->projectDir, "", $dir), "/"));
+
 							if ($proj->GetDaemonEnabled()) {
 								$this->projects[] = $proj;
 							}
