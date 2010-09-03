@@ -86,7 +86,7 @@ abstract class GitPHP_ControllerBase
 
 			if (isset($_GET['m'])) {
 				$mark = $_GET['m'];
-				if ($mark = 'reset') {
+				if ($mark == 'reset') {
 					unset($_SESSION[$this->project->GetProject()]);
 				} else {
 					$_SESSION[$this->project->GetProject()] = $mark;
