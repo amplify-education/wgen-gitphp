@@ -67,7 +67,7 @@
        {else}
        <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$commit->GetHash()}&m=reset">Unselect for diff</a></td>
        {/if}
-       {if $mark != $commit->GetHash()}
+       {if $mark && $mark != $commit->GetHash()}
        <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$commit->GetHash()}&hp={$mark}">Diff against selected ({$mark})</a></td>
        {/if}
      <tr>
