@@ -61,6 +61,16 @@
          <td class="link"><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$par->GetHash()}">commit</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$commit->GetHash()}&hp={$par->GetHash()}">commitdiff</a></td>
        </tr>
      {/foreach}
+     <tr>
+       {if !isset($_SESSION[$project->GetProject()] || $_SESSION[$project->GetProject()] != $commit->GetHash()}
+       <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$par->GetHash()}&m={$commit->GetHash()}">Select for diff</a></td>
+       {else}
+       <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$par->GetHash()}&m=reset">Unselect for diff</a></td>
+       {/if}
+       {if isset($_SESSION[$project->GetProject()] && $_SESSION[$project->GetProject()] != $commit->GetHash()}
+       <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$commit->GetHash()}&hp={$_SESSION[$project->GetProject()]}">Diff against selected ({$_SESSION[$project->GetProject()]})</a></td>
+       {/if}
+     <tr>
    </table>
  </div>
  <div class="page_body">

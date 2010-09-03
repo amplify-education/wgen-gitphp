@@ -83,6 +83,15 @@ abstract class GitPHP_ControllerBase
 			if (!$this->project) {
 				throw new GitPHP_MessageException('Invalid project ' . $_GET['p'], true);
 			}
+
+			if (isset($_GET['m'])) {
+				$mark = $_GET['m'];
+				if ($mark = 'reset') {
+					unset($_SESSION[$this->project->GetProject()]);
+				} else {
+					$_SESSION[$this->project->GetProject()] = $mark;
+				}
+			}
 		}
 
 		if (isset($_GET['s']))

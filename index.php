@@ -64,6 +64,8 @@ date_default_timezone_set('UTC');
 	 */
 	GitPHP_ProjectList::Instantiate(GITPHP_CONFIGDIR . 'gitphp.conf.php');
 
+	session_start();
+
 	$controller = GitPHP_Controller::GetController((isset($_GET['a']) ? $_GET['a'] : null));
 	if ($controller) {
 		$controller->RenderHeaders();
