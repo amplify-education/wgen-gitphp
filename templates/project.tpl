@@ -57,7 +57,7 @@
        {else}
        | <a href="{$rev->GetMarkUrl(true)}">Unselect for diff</a>
        {/if}
-       {if $mark && $mark != $commit->GetHash()}
+       {if $mark && $mark != $rev->GetHash()}
        | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}&hp={$mark}">Diff against selected ({$mark})</a>
        {/if}
        </td>
@@ -96,13 +96,13 @@
              <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a={$taglist[tag]->GetType()}&h={$taglist[tag]->GetHash()}">{$taglist[tag]->GetType()}</a>
 	         {if $taglist[tag]->GetType() == "commit"}
 	           | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=shortlog&h=refs/tags/{$taglist[tag]->GetName()}">shortlog</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=log&h=refs/tags/{$taglist[tag]->GetName()}">log</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=snapshot&h={$object->GetHash()}">snapshot</a>
-               {if $mark != $rev->GetHash()}
-                 | <a href="{$rev->GetMarkUrl()}">Select for diff</a>
+               {if $mark != $object->GetHash()}
+                 | <a href="{$object->GetMarkUrl()}">Select for diff</a>
                {else}
-                 | <a href="{$rev->GetMarkUrl(true)}">Unselect for diff</a>
+                 | <a href="{$object->GetMarkUrl(true)}">Unselect for diff</a>
                {/if}
-               {if $mark && $mark != $commit->GetHash()}
-                 | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}&hp={$mark}">Diff against selected ({$mark})</a>
+               {if $mark && $mark != $object->GetHash()}
+                 | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$object->GetHash()}&hp={$mark}">Diff against selected ({$mark})</a>
                {/if}
              {/if}
            </td>
@@ -126,13 +126,13 @@
            <td><em>{$headcommit->GetAge()|agestring}</em></td>
            <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=shortlog&h=refs/heads/{$headlist[head]->GetName()}" class="list"><strong>{$headlist[head]->GetName()}</strong></td>
            <td class="link"><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=shortlog&h=refs/heads/{$headlist[head]->GetName()}">shortlog</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=log&h=refs/heads/{$headlist[head]->GetName()}">log</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tree&h=refs/heads/{$headlist[head]->GetName()}&hb={$headcommit->GetHash()}">tree</a>
-             {if $mark != $rev->GetHash()}
-               | <a href="{$rev->GetMarkUrl()}">Select for diff</a>
+             {if $mark != $headcommit->GetHash()}
+               | <a href="{$headcommit->GetMarkUrl()}">Select for diff</a>
              {else}
-               | <a href="{$rev->GetMarkUrl(true)}">Unselect for diff</a>
+               | <a href="{$headcommit->GetMarkUrl(true)}">Unselect for diff</a>
              {/if}
-             {if $mark && $mark != $commit->GetHash()}
-               | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}&hp={$mark}">Diff against selected ({$mark})</a>
+             {if $mark && $mark != $headcommit->GetHash()}
+               | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$headcommit->GetHash()}&hp={$mark}">Diff against selected ({$mark})</a>
              {/if}
            </td>
          {/if}
