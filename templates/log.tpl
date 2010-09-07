@@ -52,12 +52,13 @@
        <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$rev->GetHash()}">commit</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}">commitdiff</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tree&h={$rev->GetHash()}&hb={$rev->GetHash()}">tree</a>
        <br />
        {if $mark != $rev->GetHash()}
-       | <a href="{$rev->GetMarkUrl()}">Select for diff</a>
+       <a href="{$rev->GetMarkUrl()}">Select for diff</a>
        {else}
-       | <a href="{$rev->GetMarkUrl(true)}">Unselect for diff</a>
+       <a href="{$rev->GetMarkUrl(true)}">Unselect for diff</a>
        {/if}
        {if $mark && $mark != $rev->GetHash()}
-       | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}&hp={$mark}">Diff against selected (<abbr title="{$mark}">{$mark_abbr}</abbr>)</a>
+       <br />
+       <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}&hp={$mark}">Diff against selected (<abbr title="{$mark}">{$mark_abbr}</abbr>)</a>
        {/if}
        <br />
      </div>
