@@ -956,9 +956,9 @@ class GitPHP_Commit extends GitPHP_GitObject
 		}
 		$query_string = "?";
 		foreach ($get_params as $key => $value) {
-			$query_string .= urlencode($key) . "=" . urlencode($value);
+			$query_string .= "&" . urlencode($key) . "=" . urlencode($value);
 		}
 
-		return $_SERVER["SCRIPT_NAME"]."?".$query_string;
+		return $_SERVER["SCRIPT_NAME"].$query_string;
 	}
 }
