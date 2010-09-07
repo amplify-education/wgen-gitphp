@@ -142,6 +142,9 @@ abstract class GitPHP_ControllerBase
 		if ($this->project) {
 			$cacheKeyPrefix .= '|' . sha1($this->project->GetProject());
 		}
+		if ($this->mark) {
+			$cacheKeyPrefix .= '|' . $this->mark;
+		}
 		
 		return $cacheKeyPrefix;
 	}
@@ -245,8 +248,10 @@ abstract class GitPHP_ControllerBase
 		$this->tpl->assign('action', $this->GetName());
 		if ($this->project)
 			$this->tpl->assign('project', $this->project);
-		if ($this->mark)
+		if ($this->mark) {
 			$this->tpl->assign('mark', $this->mark);
+			$this->tpl->assign('mark_abbrev', substr($this->mark, 0, 6));
+		}
 		if (GitPHP_Config::GetInstance()->GetValue('search', true))
 			$this->tpl->assign('enablesearch', true);
 		if (GitPHP_Config::GetInstance()->GetValue('filesearch', true))
