@@ -948,7 +948,7 @@ class GitPHP_Commit extends GitPHP_GitObject
 	 */
 	public function GetMarkUrl($reset = false)
 	{
-		$get_params = array($_GET);
+		$get_params = $_GET;
 		if ($reset) {
 			$get_params['m'] = 'reset';
 		} else {
