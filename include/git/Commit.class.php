@@ -938,4 +938,27 @@ class GitPHP_Commit extends GitPHP_GitObject
 		return array_slice($grepresults, $skip, $count, true);
 	}
 
+	/**
+	 * GetMarkUrl
+	 *
+	 * Returns the current url, but with the 'm' mark parameter set
+	 *
+	 * @access public
+	 * @param reset Return a mark url that will reset the mark
+	 */
+	public function GetMarkUrl($reset = false)
+	{
+		$get_params = array($_GET);
+		if ($reset) {
+			$get_params['m'] = 'reset';
+		} else {
+			$get_params['m'] = $this->GetHash();
+		}
+		$query_string = "?";
+		foreach ($get_params as $key => $value) {
+			$query_string .= urlencode($key) . "=" . urlencode($value);
+		}
+
+		return $_SERVER["SCRIPT_NAME"]."?".$query_string;
+	}
 }

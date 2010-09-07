@@ -63,12 +63,12 @@
      {/foreach}
      <tr>
        {if $mark != $commit->GetHash()}
-       <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$commit->GetHash()}&m={$commit->GetHash()}">Select for diff</a></td>
+       <td class = "link"><a href="{$commit->GetMarkUrl()}">Select for diff</a></td>
        {else}
-       <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$commit->GetHash()}&m=reset">Unselect for diff</a></td>
+       <td class = "link"><a href="{$commit->GetMarkUrl(true)}">Unselect for diff</a></td>
        {/if}
        {if $mark && $mark != $commit->GetHash()}
-       <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$commit->GetHash()}&hp={$mark}">Diff against selected ({$mark})</a></td>
+       <td class = "link"><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$commit->GetHash()}&hp={$mark}">Diff against selected ({$mark})</a></td>
        {/if}
      <tr>
    </table>

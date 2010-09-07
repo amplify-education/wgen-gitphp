@@ -56,9 +56,9 @@
        </td>
        <td class="link"><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$rev->GetHash()}">commit</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}">commitdiff</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tree&h={$rev->GetHash()}&hb={$rev->GetHash()}">tree</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=snapshot&h={$rev->GetHash()}">snapshot</a>
        {if $mark != $rev->GetHash()}
-       | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$rev->GetHash()}&m={$rev->GetHash()}">Select for diff</a>
+       | <a href="{$rev->GetMarkUrl()}">Select for diff</a>
        {else}
-       | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$rev->GetHash()}&m=reset">Unselect for diff</a>
+       | <a href="{$rev->GetMarkUrl(true)}">Unselect for diff</a>
        {/if}
        {if $mark && $mark != $commit->GetHash()}
        | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}&hp={$mark}">Diff against selected ({$mark})</a>

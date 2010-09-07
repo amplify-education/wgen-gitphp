@@ -51,6 +51,15 @@
      <div class="log_link">
        <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$rev->GetHash()}">commit</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}">commitdiff</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tree&h={$rev->GetHash()}&hb={$rev->GetHash()}">tree</a>
        <br />
+       {if $mark != $rev->GetHash()}
+       | <a href="{$rev->GetMarkUrl()}">Select for diff</a>
+       {else}
+       | <a href="{$rev->GetMarkUrl(true)}">Unselect for diff</a>
+       {/if}
+       {if $mark && $mark != $commit->GetHash()}
+       | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}&hp={$mark}">Diff against selected ({$mark})</a>
+       {/if}
+       <br />
      </div>
      <em>{$rev->GetAuthorName()} [{$rev->GetAuthorEpoch()|date_format:"%a, %d %b %Y %H:%M:%S %z"}]</em><br />
    </div>
