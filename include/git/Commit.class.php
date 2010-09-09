@@ -619,7 +619,7 @@ class GitPHP_Commit extends GitPHP_GitObject
 		$projectTags = $this->project->GetTags();
 
 		foreach ($projectTags as $tag) {
-			if ($tag->GetObject()->GetHash() === $this->hash) {
+			if (is_object($tag->GetObject()) && $tag->GetObject()->GetHash() === $this->hash) {
 				$tags[] = $tag;
 			}
 		}
