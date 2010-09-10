@@ -48,9 +48,10 @@ abstract class GitPHP_GitObject
 	 * @return mixed git object
 	 * @throws Exception exception on invalid hash
 	 */
-	public function __construct($project, $hash)
+	public function __construct($project, $hash, $type = null)
 	{
 		$this->project = $project;
+		$this->type = $type;
 		$this->SetHash($hash);
 	}
 

@@ -41,6 +41,15 @@ class GitPHP_Tag extends GitPHP_GitObject
 	protected $object;
 
 	/**
+	 * objectHash
+	 *
+	 * Stores the hash of the object before the object hash been loaded
+	 *
+	 * @access protected
+	 */
+	protected $objectHash;
+
+	/**
 	 * tagName
 	 *
 	 * Stores the name of this tag internally
@@ -98,8 +107,7 @@ class GitPHP_Tag extends GitPHP_GitObject
 	 */
 	public function __construct($project, $tagHash)
 	{
-
-		parent::__construct($project, $tagHash);
+		parent::__construct($project, $tagHash, 'tag');
 	}
 
 	/**
@@ -114,6 +122,9 @@ class GitPHP_Tag extends GitPHP_GitObject
 	{
 		if (!$this->dataRead)
 			$this->ReadData();
+
+		if (!$this->object)
+			$this->object = $this->project->GetObject($this->objectHash);
 
 		return $this->object;
 	}
@@ -230,7 +241,7 @@ class GitPHP_Tag extends GitPHP_GitObject
 		foreach ($lines as $i => $line) {
 			if (!$readInitialData) {
 				if (preg_match('/^object ([0-9a-fA-F]{40})$/', $line, $regs)) {
-					$this->object = $this->project->GetObject($regs[1]);
+					$this->objectHash = $regs[1];
 					continue;
 				} else if (preg_match('/^type (.+)$/', $line, $regs)) {
 					// Ignore this, because it's determined by GetType of the object

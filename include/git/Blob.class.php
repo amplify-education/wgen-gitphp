@@ -98,7 +98,7 @@ class GitPHP_Blob extends GitPHP_FilesystemObject
 	 */
 	public function __construct($project, $hash)
 	{
-		parent::__construct($project, $hash);
+		parent::__construct($project, $hash, 'blob');
 	}
 
 	/**

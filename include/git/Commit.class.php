@@ -209,7 +209,7 @@ class GitPHP_Commit extends GitPHP_GitObject
 	 */
 	public function __construct($project, $hash)
 	{
-		parent::__construct($project, $hash);
+		parent::__construct($project, $hash, 'commit');
 	}
 
 	/**

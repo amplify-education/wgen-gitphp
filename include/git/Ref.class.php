@@ -74,30 +74,7 @@ class GitPHP_Ref
 		$this->project = $project;
 		$this->refDir = $refDir;
 		$this->refName = $refName;
-		$this->refObject = $project->GetObject($this->FindHash());
-	}
-
-	/**
-	 * FindHash
-	 *
-	 * Looks up the hash for the ref
-	 *
-	 * @access protected
-	 * @throws Exception if hash is not found
-	 */
-	protected function FindHash()
-	{
-		$exe = new GitPHP_GitExe($this->project);
-		$args = array();
-		$args[] = '--hash';
-		$args[] = '--verify';
-		$args[] = $this->GetRefPath();
-		$hash = trim($exe->Execute(GIT_SHOW_REF, $args));
-
-		if (empty($hash))
-			throw new Exception('Invalid ref ' . $this->GetRefPath());
-
-		return $hash;
+		$this->refObject = $project->GetObject($this->refName);
 	}
 
 	/**
