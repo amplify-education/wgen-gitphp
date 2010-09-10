@@ -581,10 +581,10 @@ class GitPHP_Project
 	 * @access public
 	 * @return array array of tags
 	 */
-	public function GetTagRefs()
+	public function GetTagRefs($limit = null)
 	{
 		if (!$this->readTags)
-			$this->ReadTagList();
+			$this->ReadTagList($limit);
 
 		return $this->tags;
 	}
@@ -614,33 +614,37 @@ class GitPHP_Project
 	/**
 	 * ReadTagList
 	 *
-	 * Reads tag list
+	 * Reads tags in order of the date they were committed, up to a max of $limit
+	 * (or all tags, if $limit == null)
 	 *
 	 * @access protected
 	 */
-	protected function ReadTagList()
+	protected function ReadTagList($limit = null)
 	{
 		$this->readTags = true;
 
 		$exe = new GitPHP_GitExe($this);
 		$args = array();
-		$args[] = '--tags';
-		$args[] = '--dereference';
-		$ret = $exe->Execute(GIT_SHOW_REF, $args);
+		$args[] = '--sort=-*committerdate';
+		$args[] = '--sort=-taggerdate';
+		$args[] = '--format="%(*objectname) %(objectname) %(refname)"';
+		if (!is_null($limit))
+			$args[] = "--count=$limit";
+		$args[] = 'refs/tags';
+		$ret = $exe->Execute(GIT_FOR_EACH_REF, $args);
 		unset($exe);
 
 		$lines = explode("\n", $ret);
 
 		foreach ($lines as $line) {
-			if (preg_match('/^([0-9a-fA-F]{40}) refs\/tags\/([^^]+)(\^{})?$/', $line, $regs)) {
+			if (preg_match('/^([0-9a-fA-F]{40})? ([0-9a-fA-F]{40}) refs\/tags\/(.+)$/', $line, $regs)) {
 				try {
-					$ref = new GitPHP_Ref($this, 'tags', $regs[2]);
-					if (isset($regs[3]) && $regs[3] == "^{}") {
+					$ref = new GitPHP_Ref($this, 'tags', $regs[3]);
+					if (isset($regs[1])) {
+						$ref->SetDereferencedObject($regs[1]);
 						$this->derefTags[$regs[1]][] = $ref;
-						$this->tags[$regs[2]]->SetDereferencedObject($regs[1]);
-					} else {
-						$this->tags[$regs[2]] = $ref;
 					}
+					$this->tags[$regs[3]] = $ref;
 				} catch (Exception $e) {
 					error_log($e);
 				}

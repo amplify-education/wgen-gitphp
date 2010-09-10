@@ -20,6 +20,7 @@ define('GIT_ARCHIVE','archive');
 define('GIT_GREP','grep');
 define('GIT_BLAME','blame');
 define('GIT_TAG','tag');
+define('GIT_FOR_EACH_REF','for-each-ref');
 
 /**
  * Git Executable class
