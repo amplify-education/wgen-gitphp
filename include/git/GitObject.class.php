@@ -97,4 +97,22 @@ abstract class GitPHP_GitObject
 		$this->hash = $hash;
 	}
 
+	/**
+	 *
+	 * Returns the type of this git object, as reported by git cat-file -t
+	 *
+	 * @access public
+	 */
+	public function GetType()
+	{
+		if (!isset($this->type))
+		{
+			$exe = new GitPHP_GitExe($this->project);
+			$args = array();
+			$args[] = '-t';
+			$args[] = $this->hash;
+			$this->type = trim($exe->Execute(GIT_CAT_FILE, $args));
+		}
+		return $this->type;
+	}
 }

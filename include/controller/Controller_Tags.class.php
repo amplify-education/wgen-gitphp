@@ -97,7 +97,7 @@ class GitPHP_Controller_Tags extends GitPHP_ControllerBase
 		$head = $this->project->GetHeadCommit();
 		$this->tpl->assign("head",$head);
 
-		$taglist = $this->project->GetTags();
+		$taglist = array_values($this->project->GetTagRefs());
 		if (isset($taglist) && (count($taglist) > 0)) {
 			$this->tpl->assign("taglist",$taglist);
 		}

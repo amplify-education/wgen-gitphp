@@ -14,31 +14,31 @@
    <br /><br />
  </div>
  {* Tag data *}
- {assign var=object value=$tag->GetObject()}
+ {assign var=refObject value=$tag->GetObject()}
  <div class="title">
-   <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$object->GetHash()}" class="title">{$tag->GetName()}</a>
+   <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$refObject->GetHash()}" class="title">{$tag->GetName()}</a>
  </div>
- <div class="title_text">
+ <div class="title_text"n
    <table cellspacing="0">
      <tr>
        <td>object</td>
-       <td class="monospace"><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a={$tag->GetType()}&h={$object->GetHash()}" class="list">{$object->GetHash()}</a></td>
-       <td class="link"><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a={$tag->GetType()}&h={$object->GetHash()}">{$tag->GetType()}</a></td>
+       <td class="monospace"><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a={$refObject->GetType()}&h={$refObject->GetHash()}" class="list">{$refObject->GetHash()}</a></td>
+       <td class="link"><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a={$refObject->GetType()}&h={$refObject->GetHash()}">{$refObject->GetType()}</a></td>
      </tr>
      {if $tag->GetTagger()}
        <tr>
          <td>author</td>
-	 <td>{$tag->GetTagger()}</td>
+         <td>{$tag->GetTagger()}</td>
        </tr>
        <tr>
          <td></td>
-	 <td> {$tag->GetTaggerEpoch()|date_format:"%a, %d %b %Y %H:%M:%S %z"} 
-	 {assign var=hourlocal value=$tag->GetTaggerLocalEpoch()|date_format:"%H"}
-	 {if $hourlocal < 6}
-	 (<span class="latenight">{$tag->GetTaggerLocalEpoch()|date_format:"%R"}</span> {$tag->GetTaggerTimezone()})
-	 {else}
-	 ({$tag->GetTaggerLocalEpoch()|date_format:"%R"} {$tag->GetTaggerTimezone()})
-	 {/if}
+         <td> {$tag->GetTaggerEpoch()|date_format:"%a, %d %b %Y %H:%M:%S %z"}
+         {assign var=hourlocal value=$tag->GetTaggerLocalEpoch()|date_format:"%H"}
+         {if $hourlocal < 6}
+         (<span class="latenight">{$tag->GetTaggerLocalEpoch()|date_format:"%R"}</span> {$tag->GetTaggerTimezone()})
+         {else}
+         ({$tag->GetTaggerLocalEpoch()|date_format:"%R"} {$tag->GetTaggerTimezone()})
+         {/if}
          </td>
        </tr>
      {/if}

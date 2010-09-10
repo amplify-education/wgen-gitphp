@@ -11,17 +11,17 @@
  */
 
 require_once(GITPHP_GITOBJECTDIR . 'GitExe.class.php');
-require_once(GITPHP_GITOBJECTDIR . 'Ref.class.php');
+require_once(GITPHP_GITOBJECTDIR . 'GitObject.class.php');
 
 /**
- * Tag class
+ * Class for annotated git tags (lightweight tags are represented by GitPHP_Ref objects)
  *
  * @package GitPHP
  * @subpackage Git
  */
-class GitPHP_Tag extends GitPHP_Ref
+class GitPHP_Tag extends GitPHP_GitObject
 {
-	
+
 	/**
 	 * dataRead
 	 *
@@ -34,20 +34,20 @@ class GitPHP_Tag extends GitPHP_Ref
 	/**
 	 * object
 	 *
-	 * Stores the object internally
+	 * Stores the tagged object internally
 	 *
 	 * @access protected
 	 */
 	protected $object;
 
 	/**
-	 * type
+	 * tagName
 	 *
-	 * Stores the type internally
+	 * Stores the name of this tag internally
 	 *
 	 * @access protected
 	 */
-	protected $type;
+	protected $tagName;
 
 	/**
 	 * tagger
@@ -92,14 +92,14 @@ class GitPHP_Tag extends GitPHP_Ref
 	 *
 	 * @access public
 	 * @param mixed $project the project
-	 * @param string $tag tag name
 	 * @param string $tagHash tag hash
 	 * @return mixed tag object
 	 * @throws Exception exception on invalid tag or hash
 	 */
-	public function __construct($project, $tag, $tagHash = '')
+	public function __construct($project, $tagHash)
 	{
-		parent::__construct($project, 'tags', $tag, $tagHash);
+
+		parent::__construct($project, $tagHash);
 	}
 
 	/**
@@ -116,22 +116,6 @@ class GitPHP_Tag extends GitPHP_Ref
 			$this->ReadData();
 
 		return $this->object;
-	}
-
-	/**
-	 * GetType
-	 *
-	 * Gets the tag type
-	 *
-	 * @access public
-	 * @return string tag type
-	 */
-	public function GetType()
-	{
-		if (!$this->dataRead)
-			$this->ReadData();
-
-		return $this->type;
 	}
 
 	/**
@@ -218,25 +202,6 @@ class GitPHP_Tag extends GitPHP_Ref
 	}
 
 	/**
-	 * LightTag
-	 *
-	 * Tests if this is a light tag (tag without tag object)
-	 *
-	 * @access public
-	 * @return boolean true if tag is light (has no object)
-	 */
-	public function LightTag()
-	{
-		if (!$this->dataRead)
-			$this->ReadData();
-
-		if (!$this->object)
-			return true;
-
-		return $this->object->GetHash() === $this->hash;
-	}
-
-	/**
 	 * ReadData
 	 *
 	 * Reads the tag data
@@ -248,22 +213,11 @@ class GitPHP_Tag extends GitPHP_Ref
 		$this->dataRead = true;
 
 		$exe = new GitPHP_GitExe($this->project);
-		$args = array();
-		$args[] = '-t';
-		$args[] = $this->hash;
-		$ret = trim($exe->Execute(GIT_CAT_FILE, $args));
-		
-		if ($ret === 'commit') {
-			/* light tag */
-			$this->object = $this->project->GetCommit($this->hash);
-			$this->type = 'commit';
-			return;
-		}
 
 		/* get data from tag object */
 		$args = array();
 		$args[] = 'tag';
-		$args[] = $this->GetName();
+		$args[] = $this->GetHash();
 		$ret = $exe->Execute(GIT_CAT_FILE, $args);
 		unset($exe);
 
@@ -272,22 +226,17 @@ class GitPHP_Tag extends GitPHP_Ref
 		if (!isset($lines[0]))
 			return;
 
-		$objectHash = null;
-
 		$readInitialData = false;
 		foreach ($lines as $i => $line) {
 			if (!$readInitialData) {
 				if (preg_match('/^object ([0-9a-fA-F]{40})$/', $line, $regs)) {
-					$objectHash = $regs[1];
+					$this->object = $this->project->GetObject($regs[1]);
 					continue;
 				} else if (preg_match('/^type (.+)$/', $line, $regs)) {
-					$this->type = $regs[1];
+					// Ignore this, because it's determined by GetType of the object
 					continue;
 				} else if (preg_match('/^tag (.+)$/', $line, $regs)) {
-					if (strcmp($this->refName, trim($regs[1])) !== 0) {
-						/* Something is really wrong with your repo */
-						throw new Exception('Ref for tag ' . $this->refName . ' points to tag ' . $regs[1]);
-					}
+					$this->tagName = $regs[1];
 					continue;
 				} else if (preg_match('/^tagger (.*) ([0-9]+) (.*)$/', $line, $regs)) {
 					$this->tagger = $regs[1];
@@ -304,16 +253,6 @@ class GitPHP_Tag extends GitPHP_Ref
 			}
 			$readInitialData = true;
 
-		}
-
-		switch ($this->type) {
-			case 'commit':
-				try {
-					$this->object = $this->project->GetCommit($objectHash);
-				} catch (Exception $e) {
-				}
-				break;
-			/* TODO: add other types */
 		}
 
 	}
@@ -348,4 +287,15 @@ class GitPHP_Tag extends GitPHP_Ref
 		return strcmp($a->GetName(), $b->GetName());
 	}
 
+	/**
+	 * GetName
+	 *
+	 * Return the name of the tag
+	 *
+	 * @access public 
+	 */
+	public function GetName()
+	{
+		return $this->tagName;
+	}
 }

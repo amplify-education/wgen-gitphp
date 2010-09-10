@@ -18,7 +18,7 @@ require_once(GITPHP_GITOBJECTDIR . 'GitObject.class.php');
  * @package GitPHP
  * @subpackage Git
  */
-class GitPHP_Ref extends GitPHP_GitObject
+class GitPHP_Ref
 {
 	
 	/**
@@ -40,6 +40,24 @@ class GitPHP_Ref extends GitPHP_GitObject
 	protected $refDir;
 
 	/**
+	 * refObject
+	 *
+	 * Stores the object referenced by this ref internall
+	 *
+	 * @access protected
+	 */
+	protected $refObject;
+
+	/**
+	 * derefObject
+	 *
+	 * Stores the object referenced by this ref, following tag links
+	 *
+	 * @access protected
+	 */
+	protected $derefObject;
+
+	/**
 	 * __construct
 	 *
 	 * Instantiates ref
@@ -48,20 +66,15 @@ class GitPHP_Ref extends GitPHP_GitObject
 	 * @param mixed $project the project
 	 * @param string $refDir the ref directory
 	 * @param string $refName the ref name
-	 * @param string $refHash the ref hash
 	 * @throws Exception if not a valid ref
 	 * @return mixed git ref
 	 */
-	public function __construct($project, $refDir, $refName, $refHash = '')
+	public function __construct($project, $refDir, $refName)
 	{
 		$this->project = $project;
 		$this->refDir = $refDir;
 		$this->refName = $refName;
-		if (!empty($refHash)) {
-			$this->SetHash($refHash);
-		} else {
-			$this->FindHash();
-		}
+		$this->refObject = $project->GetObject($this->FindHash());
 	}
 
 	/**
@@ -84,7 +97,7 @@ class GitPHP_Ref extends GitPHP_GitObject
 		if (empty($hash))
 			throw new Exception('Invalid ref ' . $this->GetRefPath());
 
-		$this->SetHash($hash);
+		return $hash;
 	}
 
 	/**
@@ -111,6 +124,47 @@ class GitPHP_Ref extends GitPHP_GitObject
 	public function GetDirectory()
 	{
 		return $this->refDir;
+	}
+
+	/**
+	 * GetObject
+	 *
+	 * Returns the object referenced by this ref
+	 *
+	 * @access public
+	 * @return GitPHP_GitObject object referenced by this ref
+	 */
+	public function GetObject()
+	{
+		return $this->refObject;
+	}
+	
+	/**
+	 * SetDereferencedObject
+	 *
+	 * Set the object referenced by this ref, after resolving all tag indirections
+	 *
+	 * @access public
+	 */
+	public function SetDereferencedObject($hash)
+	{
+		$this->derefObject = $this->project->getObject($hash);
+	}
+
+	/**
+	 * GetDereferencedObject
+	 *
+	 * Returns the object referenced by this ref, after resolving all tag indirections
+	 *
+	 * @access public
+	 * @return GitPHP_GitObject object referenced by this ref
+	 */
+	public function GetDereferencedObject()
+	{
+		if (isset($this->derefObject))
+			return $this->derefObject;
+		else
+			return $this->refObject;
 	}
 
 	/**

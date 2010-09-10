@@ -122,5 +122,4 @@ class GitPHP_Tree extends GitPHP_FilesystemObject
 			}
 		}
 	}
-
 }

@@ -10,6 +10,7 @@
 
  <div class="page_nav">
    {include file='project_header.tpl' unselect='blob' commit=$commit}
+   <br/>
    <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=blob_plain&h={$blob->GetHash()}&f={$blob->GetPath()}">plain</a> | 
    {if ($commit->GetHash() != $head->GetHash()) && ($head->PathToHash($blob->GetPath()))}
      <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=blob&hb=HEAD&f={$blob->GetPath()}">HEAD</a>

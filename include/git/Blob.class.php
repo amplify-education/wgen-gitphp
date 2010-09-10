@@ -473,5 +473,4 @@ class GitPHP_Blob extends GitPHP_FilesystemObject
 			}
 		}
 	}
-
 }

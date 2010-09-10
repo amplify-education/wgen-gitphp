@@ -431,34 +431,64 @@ class GitPHP_Project
 	 *
 	 * Get a commit for this project
 	 *
+	 * @param name the name of the commit to be retrieved
 	 * @access public
 	 */
-	public function GetCommit($hash)
+	public function GetCommit($name)
 	{
-		if (empty($hash))
+		if (empty($name))
 			return null;
 
-		if ($hash === 'HEAD')
-			return $this->GetHeadCommit();
-
-		if (substr_compare($hash, 'refs/heads/', 0, 11) === 0) {
-			$head = $this->GetHead(substr($hash, 11));
-			if ($head != null)
-				return $head->GetCommit();
-		} else if (substr_compare($hash, 'refs/tags/', 0, 10) === 0) {
-			$tag = $this->GetTag(substr($hash, 10));
-			if ($tag != null) {
-				$obj = $tag->GetObject();
-				if ($obj != null) {
-					return $obj;
-				}
-			}
-		}
+		$hash = $this->ParseName($name);
 
 		if (!isset($this->commitCache[$hash]))
 			$this->commitCache[$hash] = new GitPHP_Commit($this, $hash);
 
 		return $this->commitCache[$hash];
+	}
+
+	/**
+	 * ParseName
+	 *
+	 * Returns the hash for the supplied ref
+	 *
+	 * @access protected
+	 */
+	protected function ParseName($name)
+	{
+		$exe = new GitPHP_GitExe($this);
+		$args = array();
+		$args[] = '--verify';
+		$args[] = $name;
+		return trim($exe->Execute(GIT_REV_PARSE, $args));
+	}
+
+	/**
+	 * GetObject
+	 *
+	 * Returns a commit object or a tag object named by this name.
+	 *
+	 * @param name the hash or ref to be loaded
+	 * @access public
+	 */
+	public function GetObject($name)
+	{
+		$exe = new GitPHP_GitExe($this);
+		$args = array();
+		$args[] = '-t';
+		$args[] = $name;
+		$type = trim($exe->Execute(GIT_CAT_FILE, $args));
+
+		switch ($type) {
+		case 'commit':
+			return $this->GetCommit($name);
+		case 'tag':
+			return $this->GetTag($name);
+		case 'blob':
+			return $this->GetBlob($name);
+		default:
+			throw new Exception("Unknown object type '$type' for object $name");
+		}
 	}
 
 	/**
@@ -544,14 +574,14 @@ class GitPHP_Project
 	}
 
 	/**
-	 * GetTags
+	 * GetTagNames
 	 *
-	 * Gets list of tags for this project
+	 * Gets list of tag names for this project
 	 *
 	 * @access public
 	 * @return array array of tags
 	 */
-	public function GetTags()
+	public function GetTagRefs()
 	{
 		if (!$this->readTags)
 			$this->ReadTagList();
@@ -562,27 +592,23 @@ class GitPHP_Project
 	/**
 	 * GetTag
 	 *
-	 * Gets a single tag
+	 * Gets the tag object for the specified hash
 	 *
 	 * @access public
-	 * @param string $tag tag to find
+	 * @param string $name a name for the tag object (either a hash or a ref)
 	 * @return mixed tag object
 	 */
-	public function GetTag($tag)
+	public function GetTag($name)
 	{
-		if (empty($tag))
+		if (empty($name))
 			return null;
 
-		if (!$this->readTags)
-			$this->ReadTagList();
+		$hash = $this->ParseName($name);
 
-		foreach ($this->tags as $t) {
-			if ($t->GetName() === $tag) {
-				return $t;
-			}
-		}
+		if (!isset($this->tagCache[$hash]))
+			$this->tagCache[$hash] = new GitPHP_Tag($this, $hash);
 
-		return null;
+		return $this->tagCache[$hash];
 	}
 
 	/**
@@ -599,22 +625,42 @@ class GitPHP_Project
 		$exe = new GitPHP_GitExe($this);
 		$args = array();
 		$args[] = '--tags';
+		$args[] = '--dereference';
 		$ret = $exe->Execute(GIT_SHOW_REF, $args);
 		unset($exe);
 
 		$lines = explode("\n", $ret);
 
 		foreach ($lines as $line) {
-			if (preg_match('/^([0-9a-fA-F]{40}) refs\/tags\/(.+)$/', $line, $regs)) {
+			if (preg_match('/^([0-9a-fA-F]{40}) refs\/tags\/([^^]+)(\^{})?$/', $line, $regs)) {
 				try {
-					$this->tags[] = new GitPHP_Tag($this, $regs[2], $regs[1]);
+					$ref = new GitPHP_Ref($this, 'tags', $regs[2]);
+					if (isset($regs[3]) && $regs[3] == "^{}") {
+						$this->derefTags[$regs[1]][] = $ref;
+						$this->tags[$regs[2]]->SetDereferencedObject($regs[1]);
+					} else {
+						$this->tags[$regs[2]] = $ref;
+					}
 				} catch (Exception $e) {
 					error_log($e);
 				}
 			}
 		}
+	}
 
-		usort($this->tags, array('GitPHP_Tag', 'CompareAge'));
+	/**
+	 * GetTagsForHash
+	 *
+	 * Return all refs that point to the supplied hash
+	 * 
+	 * @access public
+	 */
+	public function GetTagsForHash($hash)
+	{
+		if (!$this->readTags)
+			$this->ReadTagList();
+
+		return $this->derefTags[$hash];
 	}
 
 	/**
@@ -735,12 +781,14 @@ class GitPHP_Project
 	 * Gets a blob from this project
 	 *
 	 * @access public
-	 * @param string $hash blob hash
+	 * @param string $hash blob name (hash or ref)
 	 */
-	public function GetBlob($hash)
+	public function GetBlob($name)
 	{
-		if (empty($hash))
+		if (empty($name))
 			return null;
+
+		$hash = $this->ParseName($name);
 
 		if (!isset($this->blobCache[$hash]))
 			$this->blobCache[$hash] = new GitPHP_Blob($this, $hash);
@@ -754,12 +802,14 @@ class GitPHP_Project
 	 * Gets a tree from this project
 	 *
 	 * @access public
-	 * @param string $hash tree hash
+	 * @param string $hash tree name (hash or ref)
 	 */
-	public function GetTree($hash)
+	public function GetTree($name)
 	{
-		if (empty($hash))
+		if (empty($name))
 			return null;
+
+		$hash = $this->ParseName($name);
 
 		if (!isset($this->treeCache[$hash]))
 			$this->treeCache[$hash] = new GitPHP_Tree($this, $hash);

@@ -14,6 +14,7 @@ require_once(GITPHP_GITOBJECTDIR . 'GitExe.class.php');
 require_once(GITPHP_GITOBJECTDIR . 'GitObject.class.php');
 require_once(GITPHP_GITOBJECTDIR . 'Tree.class.php');
 require_once(GITPHP_GITOBJECTDIR . 'TreeDiff.class.php');
+require_once(GITPHP_GITOBJECTDIR . 'Ref.class.php');
 
 /**
  * Commit class
@@ -616,17 +617,7 @@ class GitPHP_Commit extends GitPHP_GitObject
 	 */
 	public function GetTags()
 	{
-		$tags = array();
-
-		$projectTags = $this->project->GetTags();
-
-		foreach ($projectTags as $tag) {
-			if (is_object($tag->GetObject()) && $tag->GetObject()->GetHash() === $this->hash) {
-				$tags[] = $tag;
-			}
-		}
-
-		return $tags;
+		return $this->project->GetTagsForHash($this->hash);
 	}
 
 	/**
