@@ -63,6 +63,7 @@ class GitPHP_ProjectListArray extends GitPHP_ProjectListBase
 							$projObj->SetCategory($cat);
 						$this->projects[] = $projObj;
 					} catch (Exception $e) {
+						error_log($e);
 					}
 				}
 			}

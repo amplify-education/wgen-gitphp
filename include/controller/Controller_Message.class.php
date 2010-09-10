@@ -31,6 +31,7 @@ class GitPHP_Controller_Message extends GitPHP_ControllerBase
 		try {
 			parent::__construct();
 		} catch (Exception $e) {
+			error_log($e);
 		}
 	}
 

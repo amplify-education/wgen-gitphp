@@ -609,6 +609,7 @@ class GitPHP_Project
 				try {
 					$this->tags[] = new GitPHP_Tag($this, $regs[2], $regs[1]);
 				} catch (Exception $e) {
+					error_log($e);
 				}
 			}
 		}
@@ -682,6 +683,7 @@ class GitPHP_Project
 				try {
 					$this->heads[] = new GitPHP_Head($this, $regs[2], $regs[1]);
 				} catch (Exception $e) {
+					error_log($e);
 				}
 			}
 		}

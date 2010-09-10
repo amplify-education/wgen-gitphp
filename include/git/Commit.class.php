@@ -540,6 +540,7 @@ class GitPHP_Commit extends GitPHP_GitObject
 			try {
 				$this->parents[] = new GitPHP_Commit($this->project, $tok);
 			} catch (Exception $e) {
+				error_log($e);
 			}
 			$tok = strtok(' ');
 		}
@@ -554,6 +555,7 @@ class GitPHP_Commit extends GitPHP_GitObject
 						$this->tree = $tree;
 					}
 				} catch (Exception $e) {
+					error_log($e);
 				}
 			} else if (preg_match('/^author (.*) ([0-9]+) (.*)$/', $line, $regs)) {
 				/* author data */

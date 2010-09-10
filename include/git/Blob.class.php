@@ -415,6 +415,7 @@ class GitPHP_Blob extends GitPHP_FilesystemObject
 					$history->SetCommit($commit);
 					$this->history[] = $history;
 				} catch (Exception $e) {
+					error_log($e);
 				}
 				unset ($commit);
 			}

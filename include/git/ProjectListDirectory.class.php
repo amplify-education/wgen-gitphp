@@ -91,6 +91,7 @@ class GitPHP_ProjectListDirectory extends GitPHP_ProjectListBase
 								$this->projects[] = $proj;
 							}
 						} catch (Exception $e) {
+							error_log($e);
 						}
 					} else {
 						$this->RecurseDir($fullPath);

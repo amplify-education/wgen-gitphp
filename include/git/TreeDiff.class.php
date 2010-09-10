@@ -143,6 +143,7 @@ class GitPHP_TreeDiff implements Iterator
 				try {
 					$this->fileDiffs[] = new GitPHP_FileDiff($this->project, $trimmed);
 				} catch (Exception $e) {
+					error_log($e);
 				}
 			}
 		}

@@ -73,6 +73,7 @@ class GitPHP_ProjectListFile extends GitPHP_ProjectListBase
 					}
 					$this->projects[] = $projObj;
 				} catch (Exception $e) {
+					error_log($e);
 				}
 			}
 		}
