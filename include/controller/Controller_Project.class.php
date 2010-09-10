@@ -97,21 +97,20 @@ class GitPHP_Controller_Project extends GitPHP_ControllerBase
 
 		$revlist = $this->project->GetLog('HEAD', 17);
 		if ($revlist) {
-			if (count($revlist) > 16) {
-				$this->tpl->assign('hasmorerevs', true);
-				$revlist = array_slice($revlist, 0, 16);
-			}
-			$this->tpl->assign('revlist', $revlist);
+			$this->tpl->assign('hasmorerevs', count($revlist) > 16);
+			$this->tpl->assign("revlist", array_slice($revlist, 0, 16));
 		}
 
 		$taglist = $this->project->GetTags();
 		if (isset($taglist) && (count($taglist) > 0)) {
-			$this->tpl->assign("taglist",$taglist);
+			$this->tpl->assign('hasmoretags', count($taglist) > 16);
+			$this->tpl->assign("taglist", array_slice($taglist, 0, 16));
 		}
 
 		$headlist = $this->project->GetHeads();
 		if (isset($headlist) && (count($headlist) > 0)) {
-			$this->tpl->assign("headlist",$headlist);
+			$this->tpl->assign('hasmoreheads', count($headlist) > 16);
+			$this->tpl->assign("headlist", array_slice($headlist, 0, 16));
 		}
 	}
 

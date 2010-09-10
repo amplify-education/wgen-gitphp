@@ -32,37 +32,7 @@
  {include file='title.tpl' target='shortlog'}
  
  <table cellspacing="0">
-   {foreach from=$revlist item=rev}
-     <tr class="{cycle name=revs values="light,dark"}">
-     <td><em>{$rev->GetAge()|agestring}</em></td>
-     <td><em>{$rev->GetAuthorName()}</em></td>
-     <td>
-       <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$rev->GetHash()}" class="list" {if strlen($rev->GetTitle()) > 50}title="{$rev->GetTitle()}"{/if}><strong>{$rev->GetTitle(50)}</strong></a>
-       <span class="refs">
-       {foreach item=revhead from=$rev->GetHeads()}
-         <span class="head">
-           <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=shortlog&h=refs/heads/{$revhead->GetName()}">{$revhead->GetName()}</a>
-         </span>
-       {/foreach}
-       {foreach item=revtag from=$rev->GetTags()}
-         <span class="tag">
-           <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tag&h={$revtag->GetName()}">{$revtag->GetName()}</a>
-         </span>
-       {/foreach}
-       </span>
-     </td>
-     <td class="link"><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commit&h={$rev->GetHash()}">commit</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}">commitdiff</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tree&h={$rev->GetHash()}&hb={$rev->GetHash()}">tree</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=snapshot&h={$rev->GetHash()}">snapshot</a>
-       {if $mark != $rev->GetHash()}
-       | <a href="{$rev->GetMarkUrl()}">Select for diff</a>
-       {else}
-       | <a href="{$rev->GetMarkUrl(true)}">Unselect for diff</a>
-       {/if}
-       {if $mark && $mark != $rev->GetHash()}
-       | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$rev->GetHash()}&hp={$mark}">Diff against selected (<abbr title="{$mark}">{$mark_abbr}</abbr>)</a>
-       {/if}
-       </td>
-     </tr>
-   {/foreach}
+   {include file='shortlog_list.tpl' revlist=$revlist}
    {if $hasmorerevs}
      <tr class="light">
        <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=shortlog">...</a></td>
@@ -71,74 +41,33 @@
  </table>
  {if $taglist}
    {* Tags *}
-  
-  {include file='title.tpl' target='tags'}
-   
+   {include file='title.tpl' target='tags'}
    <table cellspacing="0">
-     {section name=tag max=17 loop=$taglist}
-       <tr class="{cycle name=tags values="light,dark"}">
-         {if $smarty.section.tag.index == 16}
-           <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tags">...</a></td>
-         {else}
-	   {assign var=object value=$taglist[tag]->GetObject()}
-           <td><em>{$object->GetAge()|agestring}</em></td>
-           <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a={$taglist[tag]->GetType()}&h={$object->GetHash()}" class="list"><strong>{$taglist[tag]->GetName()}</strong></a></td>
-           <td>
-	     {assign var=comment value=$taglist[tag]->GetComment()}
-             {if count($comment) > 0}
-               <a class="list" href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tag&h={$taglist[tag]->GetName()}">{$comment[0]}</a>
-             {/if}
-           </td>
-           <td class="link">
-             {if !$taglist[tag]->LightTag()}
-   	           <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tag&h={$taglist[tag]->GetName()}">tag</a> | 
-             {/if}
-             <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a={$taglist[tag]->GetType()}&h={$taglist[tag]->GetHash()}">{$taglist[tag]->GetType()}</a>
-	         {if $taglist[tag]->GetType() == "commit"}
-	           | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=shortlog&h=refs/tags/{$taglist[tag]->GetName()}">shortlog</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=log&h=refs/tags/{$taglist[tag]->GetName()}">log</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=snapshot&h={$object->GetHash()}">snapshot</a>
-               {if $mark != $object->GetHash()}
-                 | <a href="{$object->GetMarkUrl()}">Select for diff</a>
-               {else}
-                 | <a href="{$object->GetMarkUrl(true)}">Unselect for diff</a>
-               {/if}
-               {if $mark && $mark != $object->GetHash()}
-                 | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$object->GetHash()}&hp={$mark}">Diff against selected (<abbr title="{$mark}">{$mark_abbr}</abbr>)</a>
-               {/if}
-             {/if}
-           </td>
-         {/if}
+     {include file='tag_list.tpl' taglist=$taglist}
+     {if $hasmoretags}
+       <tr class="light">
+         <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tags">...</a></td>
        </tr>
-     {/section}
+     {/if}
    </table>
+
+
+   
  {/if}
  {if $headlist}
    {* Heads *}
 
-  {include file='title.tpl' target='heads'}
+   {include file='title.tpl' target='heads'}
 
    <table cellspacing="0">
-     {section name=head max=17 loop=$headlist}
-       <tr class="{cycle name=heads values="light,dark"}">
-         {if $smarty.section.head.index == 16}
-           <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=heads">...</a></td>
-         {else}
-	   {assign var=headcommit value=$headlist[head]->GetCommit()}
-           <td><em>{$headcommit->GetAge()|agestring}</em></td>
-           <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=shortlog&h=refs/heads/{$headlist[head]->GetName()}" class="list"><strong>{$headlist[head]->GetName()}</strong></td>
-           <td class="link"><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=shortlog&h=refs/heads/{$headlist[head]->GetName()}">shortlog</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=log&h=refs/heads/{$headlist[head]->GetName()}">log</a> | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=tree&h=refs/heads/{$headlist[head]->GetName()}&hb={$headcommit->GetHash()}">tree</a>
-             {if $mark != $headcommit->GetHash()}
-               | <a href="{$headcommit->GetMarkUrl()}">Select for diff</a>
-             {else}
-               | <a href="{$headcommit->GetMarkUrl(true)}">Unselect for diff</a>
-             {/if}
-             {if $mark && $mark != $headcommit->GetHash()}
-               | <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=commitdiff&h={$headcommit->GetHash()}&hp={$mark}">Diff against selected (<abbr title="{$mark}">{$mark_abbr}</abbr>)</a>
-             {/if}
-           </td>
-         {/if}
+     {include file='head_list.tpl' headlist=$headlist}
+     {if $hasmoreheads}
+       <tr class="light">
+         <td><a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&a=heads">...</a></td>
        </tr>
-     {/section}
+     {/if}
    </table>
+
  {/if}
 
  {include file='footer.tpl'}
